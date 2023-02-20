@@ -16,7 +16,7 @@ spec:
         app: app
     spec:
       terminationGracePeriodSeconds: 10
-       imagePullSecrets:
+      imagePullSecrets:
         - name: diploi-pull-secret
       containers:
         - name: app
