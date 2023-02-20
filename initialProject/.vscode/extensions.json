@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "svelte.svelte-vscode",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "frigus02.vscode-sql-tagged-template-literals-syntax-only",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg"
+  ]
+}
