@@ -10,7 +10,7 @@ stages:
     identifier: staging
   - name: Production
     identifier: production
-  
+
 contexts:
   - name: app
     identifier: app
@@ -108,7 +108,7 @@ images:
   - identifier: app
     repository: web
     dockerfile: Dockerfile
-    image: nemesys/diploi-sveltekit-template:[template-tag]
+    image: diploi/sveltekit-template:[template-tag]
     buildStages:
       - staging
       - production
