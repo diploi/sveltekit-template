@@ -16,8 +16,8 @@ spec:
         app: app
     spec:
       terminationGracePeriodSeconds: 10
-      imagePullSecrets:
-        - name: docker-pull-secret
+       imagePullSecrets:
+        - name: diploi-pull-secret
       containers:
         - name: app
           image: {{ .Values.images.app }}
@@ -40,9 +40,9 @@ spec:
               value: {{ .value | quote }}
             {{- end }}
             - name: REPOSITORY_URL
-              value: {{ .Values.repositories.web.url }} 
+              value: {{ .Values.repositories.web.url }}
             - name: REPOSITORY_BRANCH
-              value: {{ .Values.repositories.web.branch }} 
+              value: {{ .Values.repositories.web.branch }}
             - name: APP_PUBLIC_URL
               value: {{ .Values.hosts.app }}
             - name: STAGE
@@ -88,6 +88,6 @@ spec:
         - name: diploi-git
           secret:
             secretName: diploi-git
-           
 
-        
+
+
