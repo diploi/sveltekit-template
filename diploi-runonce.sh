@@ -22,8 +22,8 @@ if [ ! "$(ls -A /app)" ]; then
 
   echo "Empty /app, assuming development instance setup was intended";
 
-  # Make /app default folder  
-  echo "cd /app;" >> /root/.bashrc
+  # Make /app default folder
+  echo "cd /app;" >> /root/.profile
 
   # Generate root ssh key
   ssh-keygen -A;
@@ -67,8 +67,13 @@ update-ca-certificates
 # Make all special env variables available in ssh also (ssh will wipe out env by default)
 env >> /etc/environment
 
+# Wait for PostgreSQL to be ready
+until pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT | grep -q 'accepting connections'
+do
+  sleep 1
+done
+
 # Seed database
-# NOTE! Not ideal, this assumes postgres starts faster than app container
 node /app/src/lib/seedDatabase.cjs
 
 # Now that everything is initialized, start all services
