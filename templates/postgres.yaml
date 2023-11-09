@@ -1,3 +1,4 @@
+{{- if eq .Values.parameterGroupsEnabled.postgres true }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -7,7 +8,7 @@ spec:
     matchLabels:
       app: postgres
   serviceName: postgres
-  replicas: {{ ternary 1 0 .Values.enabled }}
+  replicas: {{ ternary 1 0 $.Values.enabled }}
   template:
     metadata:
       labels:
@@ -23,7 +24,13 @@ spec:
           env:
             - name: PGDATA
               value: /postgres/data
-            {{- range .Values.parameterGroups }}
+            {{- range $.Values.env }}
+            {{- if contains "postgres" .contexts }}
+            - name: {{ .identifier }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- range $.Values.parameterGroups }}
             - name: {{ .identifier }}
               value: {{ .value | quote }}
             {{- end }}
@@ -33,4 +40,5 @@ spec:
       volumes:
         - name: postgres-mount
           hostPath:
-            path: {{ .Values.storage.postgres.hostPath }}
+            path: {{ $.Values.storage.postgres.hostPath }}
+{{ end }}

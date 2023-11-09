@@ -1,9 +1,7 @@
-# Diploi SvelteKit ToDo template
-
-A simple starter ToDo app template implemented with SvelteKit.   
+A simple starter ToDo app template implemented with SvelteKit.  
 Includes an optional PostgreSQL database.
 
-Features full TypeScript support, out-of-the-box DB connection, HMR support, and much more!   
+Features full TypeScript support, out-of-the-box DB connection, HMR support, and much more!  
 Implements a backed CRUD API with SvelteKit form actions.
 
 - 💻 [SvelteKit](https://kit.svelte.dev/)

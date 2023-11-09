@@ -1,4 +1,4 @@
-FROM node:16.13-slim
+FROM node:20.9.0-slim
 
 # This dockerfile is run by diploi image builder, it will have 
 # this template repository as it's base and the actual project
@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y nano supervisor openssh-server git bash
 # Install PostgreSQL client
 RUN apt-get install -y postgresql-client
 
-RUN mkdir /run/sshd /root/.ssh \
+# SSH keys and some login related stuff (some work only for prod)
+RUN mkdir -p /run/sshd /root/.ssh \
   && chmod 0700 /root/.ssh \
   && ssh-keygen -A \
   && sed -i s/^#PasswordAuthentication\ yes/PasswordAuthentication\ no/ /etc/ssh/sshd_config \
@@ -31,6 +32,6 @@ RUN ln -s /etc/diploi-git/gitconfig /etc/gitconfig
 COPY diploi-credential-helper /usr/local/bin
 
 # Init and run supervisor
-COPY runonce.sh /root/runonce.sh
+COPY diploi-runonce.sh /usr/local/bin/diploi-runonce.sh
 COPY supervisord.conf /etc/supervisord.conf
 CMD /usr/bin/supervisord -c /etc/supervisord.conf

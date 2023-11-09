@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+{{- if eq .Values.stage "development"}}
+kind: StatefulSet
+{{- else }}
+kind: Deployment
+{{- end }}
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  selector:
+    matchLabels:
+      app: app
+  {{- if eq .Values.stage "development"}}
+  serviceName: app
+  {{- else }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  {{- end }}
+  replicas: {{ ternary 1 0 .Values.enabled }}
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+        - name: diploi-pull-secret
+      #priorityClassName: {{ .Values.stage }} # disabled temporarily as old cores doesn't support this
+      #fix this by manualy kubectl apply -f [priorityclassesfile] in core code!
+      containers:
+        - name: app
+          image: {{ .Values.images.app }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ atoi .Values.envMap.VITE_PORT.value }}
+              name: app-vite
+            - containerPort: 3000
+              name: app-status
+          #startupProbe:
+          #  exec:
+          #    command:
+          #    - cat
+          #    - /tmp/pod-ready
+          #  initialDelaySeconds: 30
+          #  periodSeconds: 5
+          #  timeoutSeconds: 1
+          #  successThreshold: 1
+          #  failureThreshold: 10
+          #  #terminationGracePeriodSeconds: 10 #inherited from pod level
+          #livenessProbe:
+          #  exec:
+          #    command:
+          #    - cat
+          #    - /tmp/pod-ready
+          #  initialDelaySeconds: 5
+          #  periodSeconds: 5
+          #  timeoutSeconds: 1
+          #  successThreshold: 1
+          #  failureThreshold: 2
+          #  #terminationGracePeriodSeconds: 10 #inherited from pod level
+          #readinessProbe:
+          #  exec:
+          #    command:
+          #    - cat
+          #    - /tmp/pod-ready
+          #  initialDelaySeconds: 20
+          #  periodSeconds: 5
+          #  timeoutSeconds: 1
+          #  successThreshold: 1
+          #  failureThreshold: 2
+          #  #terminationGracePeriodSeconds: 10 #inherited from pod level
+          {{- if eq .Values.stage "development"}}
+          resources:
+            requests:
+              memory: 1500Mi
+            limits:
+              memory: 2000Mi
+          {{- else }}
+          resources:
+            requests:
+              memory: 500Mi
+            limits:
+              memory: 1000Mi
+          {{- end }}
+          env:
+            {{ range $key, $val := .Values.parameterGroupsEnabled }}
+            {{ if $val }}
+            - name: parameter_group_{{ $key }}_enabled
+              value: "1"
+            {{ end }}
+            {{ end }}
+            {{- range .Values.env }}
+            {{- if contains "app" .contexts }}
+            - name: {{ .identifier }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- range .Values.env }}
+            {{- if contains "app" .contexts }}
+            - name: {{ .identifier }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- range .Values.parameterGroups }}
+            - name: {{ .identifier }}
+              value: {{ .value | quote }}
+            {{- end }}
+            - name: REPOSITORY_URL
+              value: {{ .Values.repositories.app.url }}
+            - name: REPOSITORY_BRANCH
+              value: {{ .Values.repositories.app.branch }}
+            - name: APP_PUBLIC_URL
+              value: {{ .Values.hosts.app }}
+            - name: STAGE
+              value: {{ .Values.stage }}
+          volumeMounts:
+            {{- if hasKey .Values.storage "app" }}
+            - name: app-mount
+              mountPath: /app
+            - name: root-mount
+              mountPath: /root
+            {{- end }}
+            - name: ssh-keys
+              mountPath: /etc/ssh/internal_ssh_host_rsa.pub
+              subPath: internal_ssh_host_rsa.pub
+            - name: diploi-git
+              mountPath: /etc/diploi-git
+      volumes:
+        {{- if hasKey .Values.storage "app" }}
+        - name: app-mount
+          hostPath:
+            path: {{ .Values.storage.app.hostPath }}/app
+        - name: root-mount
+          hostPath:
+            path: {{ .Values.storage.app.hostPath }}/root
+        {{- end }}
+        - name: ssh-keys
+          secret:
+            secretName: ssh-keys
+        - name: diploi-git
+          secret:
+            secretName: diploi-git

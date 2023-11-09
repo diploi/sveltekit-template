@@ -53,26 +53,24 @@ environmentVariables:
     contexts: label=app
 
 repositories:
-  - name: web
-    identifier: web
+  - name: app
+    identifier: app
 
 hosts:
   - name: App
     identifier: app
-    urlFormat: '[label].[default-domain]'
+    urlFormat: '[name].[default-domain]'
 
 ssh:
-  - usernameFormat: '[label]'
+  - usernameFormat: 'app'
     contexts: label=app
     stages:
       - development
-  - usernameFormat: '[label]-[index]'
+  - usernameFormat: 'app-[index]'
     contexts: label=app
     stages:
       - staging
       - production
-  - usernameFormat: '[label]-postgres'
-    contexts: label=postgres
 
 logs:
   - identifier: vite-log
@@ -106,14 +104,15 @@ actions:
 
 images:
   - identifier: app
-    repository: web
+    repository: app
     dockerfile: Dockerfile
-    image: diploi/sveltekit-template:[template-tag]
-    buildStages:
-      - staging
-      - production
+    image: ghcr.io/diploi/sveltekit-template
+    initialProjectImage: ghcr.io/diploi/sveltekit-template-initial-project
     stages:
       - development
+      - staging
+      - production
+    buildStages:
       - staging
       - production
 
@@ -121,13 +120,13 @@ storage:
   - identifier: app
     stages:
       - development
-    sizeMb: 8000
+    sizeMb: 6144
   - identifier: postgres
     stages:
       - production
       - staging
       - development
-    sizeMb: 10000
+    sizeMb: 4096
 
 status:
   url: http://app:3000/status

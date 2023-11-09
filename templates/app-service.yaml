@@ -11,4 +11,4 @@ spec:
       targetPort: app-status
       name: status
   selector:
-    app: {{ ternary "app" "disabled" .Values.enabled }}
+    app: app
