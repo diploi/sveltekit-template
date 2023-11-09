@@ -69,7 +69,7 @@ env >> /etc/environment
 
 # Seed database
 # NOTE! Not ideal, this assumes postgres starts faster than app container
-node /app/lib/seedDatabase.js
+node /app/src/lib/seedDatabase.cjs
 
 # Now that everything is initialized, start all services
 supervisorctl start www
