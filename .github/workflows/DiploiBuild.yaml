@@ -1,4 +1,4 @@
-name: DiploiInitialProjectBuild
+name: DiploiBuild
 
 on:
   push:
@@ -9,10 +9,47 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  TEMPLATE_IMAGE_NAME: ${{ github.repository }}
   IMAGE_NAME: ${{ github.repository }}-initial-project
 
 jobs:
+  template-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.TEMPLATE_IMAGE_NAME }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/arm64
+          pull: true
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
   build:
+    needs: template-build
     runs-on: ubuntu-latest
     permissions:
       contents: read
