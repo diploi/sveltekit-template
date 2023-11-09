@@ -5,7 +5,7 @@ FROM node:20.9.0-slim
 # repository will be mounted in the repository folder.
 
 # Update basic packages
-RUN apt-get update && apt-get install -y nano supervisor openssh-server git bash wget curl locales libc6 libstdc++6 python3 ca-certificates tar
+RUN apt-get update && apt-get install -y nano supervisor openssh-server git bash wget curl locales libc6 libstdc++6 python-is-python3 ca-certificates tar
 
 # Install PostgreSQL client
 RUN apt-get install -y postgresql-client
