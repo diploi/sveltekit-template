@@ -19,7 +19,7 @@ RUN mkdir -p /run/sshd /root/.ssh \
   # Welcome message
   && echo "Welcome to Diploi!" > /etc/motd \
   # Go to app folder by default
-  && echo "cd /app;" >> /root/.bashrc
+  && echo "cd /app;" >> /root/.profile
 
 # Fix LC_ALL: cannot change locale (en_US.UTF-8) error
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
