@@ -6,7 +6,7 @@ on:
       - '*'
 
 env: 
-  TARGET_REPOSITORY: 'https://x-access-token:${{ secrets.DEMO_REPOSITORY_PAT }}@github.com/diploi/nextjs-sveltekit-template-demo.git'
+  TARGET_REPOSITORY: 'https://x-access-token:${{ secrets.DEMO_REPOSITORY_PAT }}@github.com/diploi/sveltekit-template-demo.git'
   TAG_NAME: '${GITHUB_REF#refs/tags/}'
 
 jobs:

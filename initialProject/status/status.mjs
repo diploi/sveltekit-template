@@ -2,6 +2,7 @@ import http from 'http';
 import { shellExec } from './shellExec.mjs';
 
 const Status = {
+  GREY: 'grey',
   GREEN: 'green',
   YELLOW: 'yellow',
   RED: 'red',
@@ -45,8 +46,8 @@ const getSupervisorStatus = async (name, process) => {
 
 const getWWWStatus = async () => {
   try {
-    const nextjsResponse = (await shellExec('curl http://app')).stdout;
-    if (nextjsResponse && nextjsResponse.includes('data-sveltekit')) {
+    const response = (await shellExec('curl http://app')).stdout;
+    if (response && response.includes('data-sveltekit')) {
       return {
         status: Status.GREEN,
         message: '',
