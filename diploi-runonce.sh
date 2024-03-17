@@ -30,7 +30,7 @@ if [ ! "$(ls -A /app)" ]; then
 
   progress "Pulling code";
 
-  git init;
+  git init --initial-branch=main
   git config credential.helper '!diploi-credential-helper';
   git remote add --fetch origin $REPOSITORY_URL;
   if [ -z "$REPOSITORY_TAG" ]; then
