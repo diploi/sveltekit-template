@@ -41,6 +41,8 @@ spec:
               name: app-vite
             - containerPort: 3000
               name: app-status
+            - containerPort: 3001
+              name: app-editor
           #startupProbe:
           #  exec:
           #    command:

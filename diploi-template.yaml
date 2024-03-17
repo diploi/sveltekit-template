@@ -55,11 +55,20 @@ environmentVariables:
 repositories:
   - name: app
     identifier: app
+    initialProjectRepositoryUrl: github.com/diploi/sveltekit-template-demo
 
 hosts:
   - name: App
     identifier: app
     urlFormat: '[name].[default-domain]'
+
+editors:
+  - name: App
+    identifier: app
+    service: app
+    port: 3001
+    stages:
+      - development
 
 ssh:
   - usernameFormat: 'app'

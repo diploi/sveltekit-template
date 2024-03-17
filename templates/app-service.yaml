@@ -10,5 +10,8 @@ spec:
     - port: 3000
       targetPort: app-status
       name: status
+    - port: 3001
+      name: editor
+      targetPort: app-editor
   selector:
     app: app
