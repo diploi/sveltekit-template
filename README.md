@@ -20,3 +20,7 @@ Available with a VSCode extension ([SQLTools](https://marketplace.visualstudio.c
 1. Open VSCode remote connection to your deployment.
 2. Install the [SQLTools](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools) and [SQLTools PostgreSQL/Redshift Driver](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools-driver-pg) extensions.
 3. Open the "SQLTools" tab in the sidebar and click "Strapi".
+
+---
+
+[<img src="https://diploi.com/launch-template-button.svg">](https://diploi.com/launch/sveltekit)
