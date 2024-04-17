@@ -8,5 +8,5 @@ COPY initialProject .
 RUN npm install && npm run build
 
 # For quick launch (86M!, so not ideal)
-RUN git clone https://github.com/diploi/nextjs-postgresql-template-demo.git /app-quick-launch \
+RUN git clone https://github.com/diploi/sveltekit-template-demo.git /app-quick-launch \
   && npm install --prefix /app-quick-launch
