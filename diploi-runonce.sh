@@ -28,20 +28,30 @@ if [ ! "$(ls -A /app)" ]; then
   # Generate root ssh key
   ssh-keygen -A;
 
-  progress "Pulling code";
-
-  git init --initial-branch=main
-  git config credential.helper '!diploi-credential-helper';
-  git remote add --fetch origin $REPOSITORY_URL;
-  if [ -z "$REPOSITORY_TAG" ]; then
-    git checkout -f $REPOSITORY_BRANCH;
+  if [ "$REPOSITORY_URL" = "https://github.com/diploi/sveltekit-template-demo.git" ]; then
+    # Using quick launch cached initial files
+    progress "Using quick launch cache start";
+    find /app-quick-launch/ -mindepth 1 -maxdepth 1 -exec mv -t /app -- {} +
+    rmdir /app-quick-launch
+    progress "Using quick launch cache done";
   else
-    git checkout -f -q $REPOSITORY_TAG;
-    git checkout -b main
-    git branch --set-upstream-to=origin/main main
+    progress "Pulling code";
+    git init --initial-branch=main
+    git config credential.helper '!diploi-credential-helper';
+    git remote add --fetch origin $REPOSITORY_URL;
+    if [ -z "$REPOSITORY_TAG" ]; then
+      git checkout -f $REPOSITORY_BRANCH;
+    else
+      git checkout -f -q $REPOSITORY_TAG;
+      git checkout -b main
+      git branch --set-upstream-to=origin/main main
+    fi
+    git remote set-url origin "$REPOSITORY_URL";
+    git config --unset credential.helper;
+
+    progress "Installing";
+    npm install;
   fi
-  git remote set-url origin "$REPOSITORY_URL";
-  git config --unset credential.helper;
 
   # Configure VSCode
   mkdir -p /root/.local/share/code-server/User
@@ -64,8 +74,6 @@ if [ ! "$(ls -A /app)" ]; then
 }
 EOL
 
-  progress "Installing";
-  npm install;
 
 fi
 
@@ -75,6 +83,12 @@ update-ca-certificates
 # Make all special env variables available in ssh also (ssh will wipe out env by default)
 env >> /etc/environment
 
+# Now that everything is initialized, start all services
+progress "Starting services";
+supervisorctl start www
+supervisorctl start code-server
+
+
 # Wait for PostgreSQL to be ready
 until pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_HOST -p $POSTGRES_PORT | grep -q 'accepting connections'
 do
@@ -83,10 +97,6 @@ done
 
 # Seed database
 node /app/src/lib/seedDatabase.cjs
-
-# Now that everything is initialized, start all services
-supervisorctl start www
-supervisorctl start code-server
 
 progress "Runonce done";
 

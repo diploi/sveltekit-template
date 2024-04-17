@@ -4,5 +4,9 @@ FROM ghcr.io/diploi/sveltekit-template
 WORKDIR /app
 COPY initialProject .
 
-RUN npm install
-RUN npm run build
+# Create production build
+RUN npm install && npm run build
+
+# For quick launch (86M!, so not ideal)
+RUN git clone https://github.com/diploi/nextjs-postgresql-template-demo.git /app-quick-launch \
+  && npm install --prefix /app-quick-launch
